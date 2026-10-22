@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prism-db
+    environment:
+      POSTGRES_DB: prism
+      POSTGRES_USER: prism
+      POSTGRES_PASSWORD: prism
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prism -d prism"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prism-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: prism-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/prism
+      KC_DB_USERNAME: prism
+      KC_DB_PASSWORD: prism
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - prism-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: prism-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://prism:prism@postgres:5432/prism
+      OIDC_ISSUER_URL: http://keycloak:8080/realms/prism-engine
+      OIDC_CLIENT_ID: prism-engine
+      OIDC_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-}
+      OIDC_REDIRECT_URI: http://localhost:3000/auth/callback
+      DEMO_MODE: "false"
+      SECRET_KEY: ${SECRET_KEY:-}
+      DEBUG: "false"
+    volumes:
+      - backend_data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://127.0.0.1:8000/health/ready', timeout=5).raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - prism-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: prism-frontend
+    environment:
+      VITE_API_URL: ""
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - prism-network
+
+volumes:
+  postgres_data:
+  keycloak_data:
+  backend_data:
+
+networks:
+  prism-network:
+    driver: bridge

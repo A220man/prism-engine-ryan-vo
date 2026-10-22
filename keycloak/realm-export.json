@@ -1,0 +1,131 @@
+{
+  "realm": "prism-engine",
+  "enabled": true,
+  "displayName": "Prism Engine",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "Full administrative access" },
+      { "name": "operator", "description": "Can manage agents and installations" },
+      { "name": "viewer", "description": "Read-only access to agents" }
+    ],
+    "client": {}
+  },
+  "clients": [
+    {
+      "clientId": "prism-engine",
+      "name": "Prism Engine",
+      "description": "Prism Engine SPA client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "CHANGE_ME_IN_PRODUCTION",
+      "redirectUris": [
+        "http://localhost:3000/auth/callback",
+        "http://127.0.0.1:3000/auth/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "prism-engine-demo",
+      "name": "Prism Engine Demo",
+      "description": "Prism Engine Demo client (local only)",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "demo-secret",
+      "redirectUris": [
+        "http://localhost:3000/auth/callback",
+        "http://127.0.0.1:3000/auth/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles"
+      ],
+      "optionalClientScopes": []
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "roles",
+      "description": "OpenID Connect roles scope",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "demo",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "User",
+      "email": "demo@prism-engine.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["operator"]
+    }
+  ]
+}
