@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "prism-engine-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "workflows": [
+    "Discover and browse AI agents across categories and capabilities",
+    "Install agents to multiple development tools with automatic format conversion",
+    "Evaluate agent quality with reproducible benchmarks and failure analysis"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "summary": "Work in progress: prism-engine-ryan-vo",
+  "status": "work-in-progress"
+}
