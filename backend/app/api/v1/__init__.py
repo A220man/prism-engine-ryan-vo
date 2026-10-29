@@ -1,1 +1,3 @@
-# API v1 package
+from app.api.v1 import health, auth, agents
+
+__all__ = ["health", "auth", "agents"]

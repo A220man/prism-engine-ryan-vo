@@ -49,3 +49,4 @@ logs/
 
 # Coverage
 coverage/
+venv/
