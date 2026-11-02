@@ -1,3 +1,6 @@
+import os
+os.environ["DEMO_MODE"] = "true"
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -14,7 +17,14 @@ TestingSessionLocal = sessionmaker(test_engine, class_=AsyncSession, expire_on_c
 
 async def override_get_db():
     async with TestingSessionLocal() as session:
-        yield session
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 class TestHealthEndpoints:
