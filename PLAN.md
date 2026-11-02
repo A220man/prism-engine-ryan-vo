@@ -25,7 +25,7 @@ Tests: `backend/tests/test_health.py`, `frontend/src/App.test.tsx`
 
 ### agent-registry — Agent registry CRUD API with SQLite persistence
 
-Status: planned
+Status: done
 
 Acceptance:
 - Create, list, get, update, delete agents via API

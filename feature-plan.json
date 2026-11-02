@@ -35,7 +35,7 @@
     {
       "id": "agent-registry",
       "title": "Agent registry CRUD API with SQLite persistence",
-      "status": "planned",
+      "status": "done",
       "acceptance": [
         "Create, list, get, update, delete agents via API",
         "SQLite persistent storage with SQLAlchemy",
