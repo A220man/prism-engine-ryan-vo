@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "project-skeleton",
+  "current_feature": "agent-installer",
   "features": [
     {
       "id": "project-skeleton",
@@ -55,7 +55,7 @@
     {
       "id": "agent-installer",
       "title": "Agent installation workflow with multi-target conversion",
-      "status": "planned",
+      "status": "done",
       "acceptance": [
         "Install agents to Claude Code, Cursor, Aider, Qwen, ZCode targets",
         "Handle ${identifier} sanitization for Qwen/ZCode",
