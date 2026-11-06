@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
 from app.core.database import init_db
-from app.api.v1 import health, auth, agents
+from app.api.v1 import health, auth, agents, install
 
 settings = get_settings()
 
@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router, prefix="")
     app.include_router(auth.router, prefix="/auth", tags=["auth"])
     app.include_router(agents.router, prefix="/api/v1", tags=["agents"])
-
+    app.include_router(install.router, prefix="/api/v1", tags=["install"])
     return app
 
 

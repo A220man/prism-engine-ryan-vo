@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-project-skeleton
+agent-installer
 
 ## Roadmap
 
@@ -39,7 +39,7 @@ Tests: `backend/tests/test_agents.py`
 
 ### agent-installer — Agent installation workflow with multi-target conversion
 
-Status: planned
+Status: done
 
 Acceptance:
 - Install agents to Claude Code, Cursor, Aider, Qwen, ZCode targets

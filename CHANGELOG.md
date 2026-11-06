@@ -1,8 +1,27 @@
 # Changelog
 
-## 1.2.0 — work-in-progress checkpoint
+## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.3.0 — Agent installer feature
+
+### Added
+- Agent installer service with multi-target support (Claude Code, Cursor, Aider, Qwen, ZCode)
+- Install API endpoints: POST /api/v1/install, GET /api/v1/install/targets
+- Identifier sanitization for Qwen/ZCode targets (${identifier} → sanitized)
+- Parallel installation with detailed success/failure results per target
+- Slug validation for Qwen/ZCode compatibility
+- Overwrite protection with optional force flag
+- Comprehensive test suite (18 tests: 10 service tests + 8 endpoint tests)
+
+### Changed
+- Updated main.py to register install router
+- Updated feature-plan.json and PLAN.md to track agent-installer completion
+
+### Fixed
+- Test database session commit for proper test isolation
+- Module-level function patching for test dependency injection
 
 ## 1.1.0 — work-in-progress checkpoint
 
