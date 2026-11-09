@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 from uuid import uuid4
 import json
@@ -36,8 +36,8 @@ class AgentService:
             version=version,
             author=author,
             tags=json.dumps(tags) if tags else None,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
         self.db.add(agent)
         await self.db.flush()
@@ -128,7 +128,7 @@ class AgentService:
         if tags is not None:
             agent.tags = json.dumps(tags) if tags else None
 
-        agent.updated_at = datetime.utcnow()
+        agent.updated_at = datetime.now(timezone.utc)
         await self.db.flush()
         return agent
 
@@ -139,4 +139,3 @@ class AgentService:
         await self.db.delete(agent)
         await self.db.flush()
         return True
-
