@@ -12,12 +12,19 @@ interface Agent {
   targets: string[]
 }
 
+interface AgentListResponse {
+  items: Agent[]
+  total: number
+}
+
 export function DashboardPage() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
     fetchAgents()
@@ -27,7 +34,14 @@ export function DashboardPage() {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.get<{ items: Agent[]; total: number }>('/api/v1/agents')
+      const response = await api.get<AgentListResponse>('/api/v1/agents', {
+        params: {
+          search,
+          category: categoryFilter || undefined,
+          page: String(page),
+          pageSize: String(pageSize),
+        },
+      })
       setAgents(response.data.items)
     } catch (err) {
       setError('Failed to load agents')
@@ -43,6 +57,12 @@ export function DashboardPage() {
     const matchesCategory = !categoryFilter || agent.category === categoryFilter
     return matchesSearch && matchesCategory
   })
+
+  const totalAgents = filteredAgents.length
+  const totalPages = Math.ceil(totalAgents / pageSize)
+  const startIndex = (page - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const pagedAgents = filteredAgents.slice(startIndex, endIndex)
 
   const categories = [...new Set(agents.map(a => a.category))].sort()
 
@@ -138,7 +158,7 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAgents.map(agent => (
+                {pagedAgents.map(agent => (
                   <tr key={agent.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                     <td style={{ padding: '1rem' }}>
                       <Link to={`/agents/${agent.id}`} style={{ textDecoration: 'none' }}>
@@ -172,6 +192,33 @@ export function DashboardPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+            {page > 1 && (
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+                style={{ padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
+                aria-label="Previous page"
+              >
+                Previous
+              </button>
+            )}
+            {page < totalPages && (
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+                style={{ padding: '0.375rem 0.75rem', fontSize: '0.875rem' }}
+                aria-label="Next page"
+              >
+                Next
+              </button>
+            )}
+            {totalPages > 1 && (
+              <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+                Page {page} of {totalPages}
+              </span>
+            )}
           </div>
         </div>
       )}
